@@ -5,7 +5,10 @@ const multer = require('multer');
 const path = require('path');
 
 const app = express();
-const port = 3000;
+const port = 5000;
+
+const cors = require('cors');
+app.use(cors());
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -68,7 +71,7 @@ if(err instanceof multer.MulterError){
 } else {
     console.log("1");
     console.log(req.file.filename)
-    var imgsrc = 'http://localhost:3000/images/' + req.file.filename
+    var imgsrc = 'http://localhost:5000/images/' + req.file.filename
     // buat variable penampung data dan query sql
         const data = { ...req.body};
         const judul = data.judul;
@@ -150,6 +153,20 @@ app.get('/api/movies/filter/:judul', (req, res) => {
     });
 });
 
+// delete data / delete data
+app.delete('/api/movies/:id', (req, res) => {
+    const id = req.params.id;
+    const querySql = 'DELETE FROM movies WHERE id = ?';
+
+    koneksi.query(querySql, [id], (err, rows, field) => {
+        if (err) {
+            return res.status(500).json({ message: 'Ada kesalahan', error: err });
+        }
+
+        // jika request berhasil
+        res.status(200).json({ success: true, message: 'Data berhasil dihapus' });
+    });
+});
 
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`);
